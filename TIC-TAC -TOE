@@ -1,0 +1,133 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+class TicTacToe {
+private:
+    char space[3][3];
+    char token;
+    string player1, player2;
+    bool tie;
+    int row, column;
+
+public:
+    TicTacToe() {
+        token = 'x';
+        tie = false;
+        // Initialize the board with numbers
+        char counter = '1';
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                space[i][j] = counter++;
+            }
+        }
+    }
+
+    void initializeGame() {
+        cout << "Enter the name of the first player:\n";
+        getline(cin, player1);
+        cout << "Enter the name of the second player:\n";
+        getline(cin, player2);
+        cout << player1 << " is player 1 (x), and will play first.\n";
+        cout << player2 << " is player 2 (0).\n";
+        printBoard();
+    }
+
+    void printBoard() {
+      
+        cout << "     |     |     \n";
+        cout << "  " << space[0][0] << "  |  " << space[0][1] << "  |  " << space[0][2] << "  \n";
+        cout << "||_\n";
+        cout << "     |     |     \n";
+        cout << "  " << space[1][0] << "  |  " << space[1][1] << "  |  " << space[1][2] << "  \n";
+        cout << "||_\n";
+        cout << "     |     |     \n";
+        cout << "  " << space[2][0] << "  |  " << space[2][1] << "  |  " << space[2][2] << "  \n";
+        cout << "     |     |     \n";
+    }
+
+    void takeTurn() {
+        int digit;
+        if (token == 'x') {
+            cout << player1 << ", please enter a number: ";
+        } else {
+            cout << player2 << ", please enter a number: ";
+        }
+        cin >> digit;
+
+        if (digit < 1 || digit > 9) {
+            cout << "Invalid input! Please enter a number between 1 and 9.\n";
+            takeTurn();
+            return;
+        }
+
+        determinePosition(digit);
+
+        if (space[row][column] != 'x' && space[row][column] != '0') {
+            space[row][column] = token;
+            token = (token == 'x') ? '0' : 'x';
+        } else {
+            cout << "The space is already occupied! Try again.\n";
+            takeTurn();
+        }
+    }
+
+    bool checkWinner() {
+        // Check rows and columns for a winner
+        for (int i = 0; i < 3; i++) {
+            if ((space[i][0] == space[i][1] && space[i][1] == space[i][2]) ||
+                (space[0][i] == space[1][i] && space[1][i] == space[2][i])) {
+                return true;
+            }
+        }
+
+        // Check diagonals for a winner
+        if ((space[0][0] == space[1][1] && space[1][1] == space[2][2]) ||
+            (space[0][2] == space[1][1] && space[1][1] == space[2][0])) {
+            return true;
+        }
+
+        // Check if the game is a tie
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                if (space[i][j] != 'x' && space[i][j] != '0') {
+                    return false; // The game is still ongoing
+                }
+            }
+        }
+
+        tie = true; // No winner, and the board is full
+        return false;
+    }
+
+    void announceResult() {
+        if (!tie) {
+            if (token == 'x') {
+                cout << player2 << " wins!!\n";
+            } else {
+                cout << player1 << " wins!!\n";
+            }
+        } else {
+            cout << "It's a draw!\n";
+        }
+    }
+
+private:
+    void determinePosition(int digit) {
+        row = (digit - 1) / 3;
+        column = (digit - 1) % 3;
+    }
+};
+
+int main() {
+    TicTacToe game;
+    game.initializeGame();
+
+    while (!game.checkWinner()) {
+        game.takeTurn();
+        game.printBoard();
+    }
+
+    game.announceResult();
+    return 0;
+}
